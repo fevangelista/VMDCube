@@ -47,4 +47,4 @@ pip install -e .
 
 ## Tutorials
 
-See [the VMDCube introductory tutorial](https://raw.githubusercontent.com/fevangelista/vmdcube/tutorials/vmdcube_tutorial.ipynb) for how to use VMDCube in Jupyter notebooks.
+See [the VMDCube introductory tutorial](https://raw.githubusercontent.com/fevangelista/vmdcube/main/tutorials/vmdcube_tutorial.ipynb) for how to use VMDCube in Jupyter notebooks.
