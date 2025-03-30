@@ -1,11 +1,11 @@
 [project]
-name = "vmdcube"
+name = "VMDCube"
 version = "1.0.0"
 description = "A Python package for rendering cube files with VMD."
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-    { name = "FAE", email = "f.e@emory.edu" },
+    { name = "Francesco Evangelista"},
 ]
 classifiers = [
     "License :: OSI Approved :: BSD License",
@@ -40,4 +40,4 @@ testpaths = [
 ]
 
 [tool.setuptools.packages.find]
-exclude = ["tutorials*"]
+exclude = ["tutorials*", "examples*"]
