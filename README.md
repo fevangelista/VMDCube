@@ -14,7 +14,7 @@
 A simple pip-installable Python module to generate pretty 3D visualizations of molecular orbitals like this the one below:
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/fevangelista/vmdcube/main/title.png" alt="VMDCube Header" width="450"/>
+<img src="https://raw.githubusercontent.com/fevangelista/vmdcube/main/images/title.png" alt="VMDCube Header" width="450"/>
 </p>
 
 VMDCube is designed to work with VMD (Visual Molecular Dynamics) and is compatible with the VMD `cube` file format. It can be used to visualize molecular orbitals, electron density, and other volumetric data.
