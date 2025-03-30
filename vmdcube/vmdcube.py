@@ -128,7 +128,7 @@ class VMDCube:
     # lighting options
     aoambient: float = 0.5
     aodirect: float = 0.5
-    ambientocclusion: str = "on"
+    ambientocclusion: str = "off"
     shadows: str = "off"
     depthcue: str = "off"
 
