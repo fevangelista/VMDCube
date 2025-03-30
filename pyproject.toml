@@ -1,0 +1,41 @@
+[project]
+name = "vmdcube"
+version = "1.0.0"
+description = "A Python package for rendering cube files with VMD."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+    { name = "FAE", email = "f.e@emory.edu" },
+]
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+]
+keywords = ["vmd", "cube", "rendering"]
+dependencies = [
+    "numpy>=1.19",
+    "matplotlib>=3.4"
+]
+
+[project.urls]
+Homepage = "https://github.com/fevangelista/vmdcube"
+Repository = "https://github.com/fevangelista/vmdcube.git"
+Issue-Tracker = "https://github.com/fevangelista/vmdcube/issues"
+
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=3.0"
+]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
