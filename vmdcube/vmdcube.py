@@ -8,20 +8,22 @@ from os.path import isfile, join
 
 from dataclasses import dataclass, field
 
-from vmdcube.vmdcube_utils import (
+from vmdcube.utils import (
     hex_to_rgb,
     parse_rgb_hex,
     which,
     multigsub,
 )
 
-from vmdcube.vmdcube_scripts import (
+from vmdcube.scripts import (
     vmd_script,
     vmd_script_surface,
     vmd_script_interactive,
     vmd_script_render,
     vmd_script_lights,
 )
+
+from vmdcube.materials import set_material
 
 
 @dataclass
@@ -109,21 +111,24 @@ class VMDCube:
     ty: float = 0.0
     tz: float = 0.0
 
-    # material properties
-    ambient: float = 0.6
-    diffuse: float = 0.5
-    mirror: float = 0.0
-    opacity: float = 1.0
-    outline: float = 0.75
-    outlinewidth: float = 1.0
-    shininess: float = 0.75
-    specular: float = 0.96
-    transmode: int = 0
+    # material type
+    material_id: str = "default"
+
+    # these values are set in the __post_init__ method by calling set_material
+    ambient: float = field(init=False)
+    diffuse: float = field(init=False)
+    mirror: float = field(init=False)
+    opacity: float = field(init=False)
+    outline: float = field(init=False)
+    outlinewidth: float = field(init=False)
+    shininess: float = field(init=False)
+    specular: float = field(init=False)
+    transmode: int = field(init=False)
 
     # lighting options
     aoambient: float = 0.5
     aodirect: float = 0.5
-    ambientocclusion: str = "off"
+    ambientocclusion: str = "on"
     shadows: str = "off"
     depthcue: str = "off"
 
@@ -138,6 +143,9 @@ class VMDCube:
     montage: bool = True
     fontsize: int = 20
     label_mos: bool = True
+
+    def __post_init__(self):
+        set_material(self, "default")
 
     @property
     def scheme(self):
@@ -165,6 +173,16 @@ class VMDCube:
             self.colors = list(value)
         else:
             raise ValueError("Invalid type for scheme, expected str or tuple/list.")
+
+    @property
+    def material(self):
+        return self.material
+
+    @material.setter
+    def material(self, value):
+        if isinstance(value, str):
+            mat = value.lower().strip()
+            set_material(self, mat)
 
     def run(self):
         self.find_vmd()
@@ -197,7 +215,7 @@ class VMDCube:
             return sorted(self.cubefiles)
 
         # Find all the cube files in a given directory
-        sorted_files = sorted([f for f in glob(self.cubedir + "/*.cube")])
+        sorted_files = sorted([f for f in glob(join(self.cubedir, "*.cube"))])
 
         # if no cube files are found, exit
         if len(sorted_files) == 0:

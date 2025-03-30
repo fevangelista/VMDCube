@@ -45,14 +45,15 @@ scale by {vmdcube.scale}
 
 # Eliminate the axis and perfect the view
 axes location off
+display projection orthographic
 display ambientocclusion {vmdcube.ambientocclusion}
 display shadows {vmdcube.shadows}
 display aoambient {vmdcube.aoambient}
 display aodirect {vmdcube.aodirect}
 display rendermode Tachyon
-display projection orthographic
 display depthcue {vmdcube.depthcue}
 display resize {vmdcube.width} {vmdcube.height}
+# Set the background color
 color change rgb 1000 {vmdcube.background[0]} {vmdcube.background[1]} {vmdcube.background[2]}
 color Display Background 1000
 """
