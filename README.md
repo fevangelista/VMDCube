@@ -40,6 +40,8 @@ The following showcases VMDCube's visualization capabilities in Jupyter notebook
 Clone the repository, then run:
 
 ```bash
+git clone git@github.com:fevangelista/VMDCube.git
+cd VMDCube
 pip install -e .
 ```
 
