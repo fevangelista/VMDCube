@@ -83,7 +83,7 @@ def vmd_script_render(imgfile, cubenum):
     """Generate a VMD script to render the molecule."""
     return f"""
 # Render
-render TachyonInternal {imgfile}.png 
+render TachyonInternal {imgfile}.tga
 mol delete {cubenum}
 """
 

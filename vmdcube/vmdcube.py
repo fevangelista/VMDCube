@@ -3,7 +3,7 @@ from re import search
 from subprocess import call
 from datetime import datetime
 from glob import glob
-from os import listdir, environ, getcwd, devnull
+from os import listdir, environ, getcwd, devnull, chdir
 from os.path import isfile, join
 
 from dataclasses import dataclass, field
@@ -140,7 +140,7 @@ class VMDCube:
     show_height: float = 7
 
     # other options
-    montage: bool = True
+    montage: bool = False
     fontsize: int = 20
     label_mos: bool = True
 
@@ -299,7 +299,7 @@ class VMDCube:
             imgfile = cubefile
             parts = cubefile.split("_")
             if len(parts) == 4 and parts[0] == "./Psi":
-                imgfile = f"{parts[0]}_{parts[1]}_{int(parts[2]):04d}_{parts[3]}"
+                imgfile = f"{parts[0]}_{parts[1]}_{int(parts[2])}_{parts[3]}"
 
             # Build the head of the script using explicit parameters.
             script_head = vmd_script(cubefile, cubenum, self)
@@ -376,7 +376,7 @@ class VMDCube:
         from IPython.display import display, clear_output
 
         # Get a sorted list of PNG files
-        img_files = sorted(glob.glob(join(self.cubedir, "*.png")))
+        img_files = sorted(glob.glob(join(self.cubedir, "*.tga")))
         if not img_files:
             print("No image files found.")
             return
@@ -456,15 +456,15 @@ class VMDCube:
         densities = []
         basis_functions = []
         for f in cube_files:
-            tga_file = f[:-5] + ".tga"
+            imgfile = f[:-5] + ".tga"
             if "Psi_a" in f:
-                alpha_mos.append(tga_file)
+                alpha_mos.append(imgfile)
             if "Psi_b" in f:
-                beta_mos.append(tga_file)
+                beta_mos.append(imgfile)
             if "D" in f:
-                densities.append(tga_file)
+                densities.append(imgfile)
             if "Phi" in f:
-                basis_functions.append(tga_file)
+                basis_functions.append(imgfile)
 
         # Sort the MOs
         sorted_mos = []
@@ -478,22 +478,22 @@ class VMDCube:
             sorted_set = sorted(sorted_set)
             sorted_mos.append([s[1] for s in sorted_set])
 
-        os.chdir(self.options["CUBEDIR"][0])
+        chdir(self.cubedir)
 
         # Add labels
-        if self.options["LABEL_MOS"][0] == "True":
+        if self.label_mos:
             for f in sorted_mos[0]:
                 f_split = f.split("_")
                 label = "%s\ \(%s\)" % (f_split[3][:-4], f_split[2])
-                subprocess.call(
+                call(
                     (
                         "montage -pointsize %s -label %s %s -geometry '%sx%s+0+0>' %s"
                         % (
-                            self.options["FONTSIZE"][0],
+                            self.fontsize,
                             label,
                             f,
-                            self.options["WIDTH"][0],
-                            self.options["HEIGHT"][0],
+                            self.width,
+                            self.height,
                             f,
                         )
                     ),
@@ -502,7 +502,7 @@ class VMDCube:
 
         # Combine together in one image
         if len(alpha_mos) > 0:
-            subprocess.call(
+            call(
                 (
                     "%s %s -geometry +2+2 AlphaMOs.tga"
                     % (montage_exe, " ".join(sorted_mos[0]))
@@ -510,7 +510,7 @@ class VMDCube:
                 shell=True,
             )
         if len(beta_mos) > 0:
-            subprocess.call(
+            call(
                 (
                     "%s %s -geometry +2+2 BetaMOs.tga"
                     % (montage_exe, " ".join(sorted_mos[1]))
@@ -518,7 +518,7 @@ class VMDCube:
                 shell=True,
             )
         if len(densities) > 0:
-            subprocess.call(
+            call(
                 (
                     "%s %s -geometry +2+2 Densities.tga"
                     % (montage_exe, " ".join(densities))
@@ -526,10 +526,11 @@ class VMDCube:
                 shell=True,
             )
         if len(basis_functions) > 0:
-            subprocess.call(
+            call(
                 (
                     "%s %s -geometry +2+2 BasisFunctions.tga"
                     % (montage_exe, " ".join(basis_functions))
                 ),
                 shell=True,
             )
+        chdir(self.default_path)
