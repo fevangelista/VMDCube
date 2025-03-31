@@ -17,7 +17,7 @@ A simple pip-installable Python module to generate pretty 3D visualizations of m
 <img src="https://raw.githubusercontent.com/fevangelista/vmdcube/main/images/title.png" alt="Example of orbital rendered with VMDCube." width="450"/>
 </p>
 
-VMDCube is designed to work with VMD (Visual Molecular Dynamics) and can render orbitals read in the standard `cube` file format. It can be used to visualize molecular orbitals, electron density, and other volumetric data.
+VMDCube is designed to work with VMD (Visual Molecular Dynamics) and can render isocountour surfaces saved in the standard cube file format. VMDCube can visualize molecular orbitals, electron density, and other volumetric data.
 
 ## Installation
 
@@ -31,7 +31,7 @@ VMDCube can be used in Python scripts and Jupyter notebooks to render cube files
 
 ```python
 from vmdcube import VMDCube
-vmd = VMDCube() # by default render all cube files in the current directory
+vmd = VMDCube() # by default, render all cube files in the current directory
 vmd.run()
 ```
 
