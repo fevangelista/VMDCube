@@ -375,7 +375,7 @@ class VMDCube:
         from ipywidgets import HBox, VBox
         from IPython.display import display, clear_output
 
-        # Get a sorted list of PNG files
+        # Get a sorted list of TGA files
         img_files = sorted(glob.glob(join(self.cubedir, "*.tga")))
         if not img_files:
             print("No image files found.")
