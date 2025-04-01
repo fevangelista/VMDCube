@@ -1,6 +1,6 @@
 [project]
 name = "VMDCube"
-version = "1.0.3"
+version = "1.0.4"
 description = "A Python package for rendering cube files with VMD."
 readme = "README.md"
 requires-python = ">=3.8"
