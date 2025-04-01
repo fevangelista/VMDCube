@@ -442,79 +442,46 @@ class VMDCube:
         # Optionally, combine all figures into one image using montage
         montage_exe = which("montage")
         if montage_exe is None:
-            (
-                print(
-                    "Montage is not installed. Please install ImageMagick to use this feature."
-                )
-                if self.verbose
-                else None
+            raise RuntimeError(
+                "Montage is not installed. Please install ImageMagick to use this feature."
             )
-            return
 
-        alpha_mos = []
-        beta_mos = []
-        densities = []
-        basis_functions = []
-        for f in cube_files:
-            imgfile = f[:-5] + ".tga"
-            if "Psi_a" in f:
-                alpha_mos.append(imgfile)
-            if "Psi_b" in f:
-                beta_mos.append(imgfile)
-            if "D" in f:
-                densities.append(imgfile)
-            if "Phi" in f:
-                basis_functions.append(imgfile)
-
-        # Sort the MOs
-        sorted_mos = []
-        for set in [alpha_mos, beta_mos]:
-            sorted_set = []
-            for s in set:
-                s_split = s.split("_")
-                sorted_set.append(
-                    (int(s_split[2]), "Psi_a_%s_%s" % (s_split[2], s_split[3]))
-                )
-            sorted_set = sorted(sorted_set)
-            sorted_mos.append([s[1] for s in sorted_set])
+        alpha_mos = [f"{f[:-5]}.tga" for f in cube_files if "Psi_a" in f]
+        beta_mos = [f"{f[:-5]}.tga" for f in cube_files if "Psi_b" in f]
+        densities = [f"{f[:-5]}.tga" for f in cube_files if "D" in f]
+        basis_functions = [f"{f[:-5]}.tga" for f in cube_files if "Phi" in f]
 
         chdir(self.cubedir)
 
+        # Sort the MOs by the orbital number
+        sorted_mos = []
+        for set in [alpha_mos, beta_mos]:
+            sorted_set = sorted([(int(s.split("_")[2]), s) for s in set])
+            sorted_mos.append([s[1] for s in sorted_set])
+
         # Add labels
         if self.label_mos:
-            for f in sorted_mos[0]:
-                f_split = f.split("_")
-                label = "%s\ \(%s\)" % (f_split[3][:-4], f_split[2])
-                call(
-                    (
-                        "montage -pointsize %s -label %s %s -geometry '%sx%s+0+0>' %s"
-                        % (
-                            self.fontsize,
-                            label,
-                            f,
-                            self.width,
-                            self.height,
-                            f,
-                        )
-                    ),
-                    shell=True,
-                )
+            for i in range(2):
+                for f in sorted_mos[i]:
+                    f_split = f.split("_")
+                    label = f"{f_split[3][:-4]}\ \({f_split[2]}\)"
+                    cmd = (
+                        f"montage -pointsize {self.fontsize} -label {label} {f} "
+                        f"-geometry '{self.width}x{self.height}+0+0>' {f}"
+                    )
+                    call(cmd, shell=True)
 
         # Combine together in one image
         if len(alpha_mos) > 0:
             call(
                 (
-                    "%s %s -geometry +2+2 AlphaMOs.tga"
-                    % (montage_exe, " ".join(sorted_mos[0]))
+                    f'{montage_exe} {" ".join(sorted_mos[0])} -geometry +2+2 AlphaMOs.tga'
                 ),
                 shell=True,
             )
         if len(beta_mos) > 0:
             call(
-                (
-                    "%s %s -geometry +2+2 BetaMOs.tga"
-                    % (montage_exe, " ".join(sorted_mos[1]))
-                ),
+                (f'{montage_exe} {" ".join(sorted_mos[1])} -geometry +2+2 BetaMOs.tga'),
                 shell=True,
             )
         if len(densities) > 0:
