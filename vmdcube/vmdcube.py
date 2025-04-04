@@ -100,6 +100,7 @@ class VMDCube:
     colors: list[int] = None
     isovalue_cutoff: float = 1.0e-5
     background_color = None
+    transparent: bool = False
 
     # rotation angles
     rx: float = 30.0
@@ -189,6 +190,7 @@ class VMDCube:
         cube_files = self.find_cubes()
         self.make_script(cube_files)
         self.run_vmd()
+        self.remove_background(cube_files) if self.transparent else None
         self.call_montage(cube_files) if self.montage else None
 
     def find_vmd(self):
@@ -315,7 +317,7 @@ class VMDCube:
                 )
             else:
                 (
-                    print(f"Plotting {f} with isosurface values {isovalues}")
+                    print(f"Plotting {filename} with isosurface values {isovalues}")
                     if self.verbose
                     else None
                 )
@@ -437,6 +439,44 @@ class VMDCube:
 
         # Display the initial image
         update_image()
+
+    def remove_background(self, cube_files):
+        """
+        Remove white background from an image and save it as PNG.
+        """
+        from PIL import Image
+
+        # loop over the cube files (Path's)
+        for f in cube_files:
+            # replace the extension of f with .tga
+            imgfile = f[:-5] + ".tga"
+            print(f"Removing background from {imgfile}") if self.verbose else None
+
+            # Open image
+            img = Image.open(imgfile).convert("RGBA")
+
+            # Choose the color to make transparent (e.g. white)
+            target_color = (255, 255, 255)  # RGB for white
+            tolerance = 10  # Allow small differences from target
+
+            # Process each pixel
+            datas = img.getdata()
+            new_data = []
+
+            for item in datas:
+                r, g, b, a = item
+                if (
+                    abs(r - target_color[0]) < tolerance
+                    and abs(g - target_color[1]) < tolerance
+                    and abs(b - target_color[2]) < tolerance
+                ):
+                    new_data.append((r, g, b, 0))  # Make transparent
+                else:
+                    new_data.append(item)
+
+            # Save new image
+            img.putdata(new_data)
+            img.save(imgfile)
 
     def call_montage(self, cube_files):
         # Optionally, combine all figures into one image using montage
